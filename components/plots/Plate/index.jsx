@@ -2,10 +2,13 @@ import * as d3 from "d3";
 import DragSelect from "dragselect";
 import React, { useRef, useEffect } from "react";
 
+import { heatmapColors } from "./utils";
+
 import "./style.css";
 
 export default props => {
   const d3Container = useRef(null);
+
   const margin = { top: 30, right: 30, bottom: 30, left: 30 };
   const width = 450 - margin.left - margin.right;
   const height = 450 - margin.top - margin.bottom;
@@ -25,11 +28,11 @@ export default props => {
       }
     });
 
-  const setEventListeners = (container) => {
+  const setEventListeners = container => {
     // add event listeners here
   };
 
-  const createSVG = (container) => {
+  const createSVG = container => {
     return d3
       .select(container)
       .attr("preserveAspectRatio", "xMinYMin meet")
@@ -70,7 +73,11 @@ export default props => {
       fill: d3
         .scaleLinear()
         .range(["white", "#69b3a2"])
-        .domain([1, 100])
+        .domain([1, 100]),
+      heatmap: d3
+        .scaleLinear()
+        .domain(d3.range(0, 1, 1.0 / (heatmapColors.length - 1)))
+        .range(heatmapColors)
     };
   };
 
