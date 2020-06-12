@@ -15,22 +15,22 @@ export default props => {
 
   const { data, yLabels, xLabels, onClick, onSelect } = props;
 
+  const setEventListeners = container => {
+    // register any event listeners here
+  };
+
   const setSelectables = selectable =>
     new DragSelect({
       selectables: document.querySelectorAll(".grit42-plate-plot rect"),
       callback: data => {
-        const selected = data.map(rect => ({
-          ...rect.__data__,
-          index: parseInt(rect.getAttribute("index"), 10)
-        }));
-
-        props.onSelect(selected);
+        props.onSelect(
+          data.map(rect => ({
+            ...rect.__data__,
+            index: parseInt(rect.getAttribute("index"), 10)
+          }))
+        );
       }
     });
-
-  const setEventListeners = container => {
-    // add event listeners here
-  };
 
   const createSVG = container => {
     return d3
@@ -73,11 +73,32 @@ export default props => {
       fill: d3
         .scaleLinear()
         .range(["white", "#69b3a2"])
-        .domain([1, 100]),
-      heatmap: d3
-        .scaleLinear()
-        .domain(d3.range(0, 1, 1.0 / (heatmapColors.length - 1)))
-        .range(heatmapColors)
+        .domain([1, 100])
+      // heatmapColors: (heatMapMode, valueMode, bogusValue, selected) => {
+      //   if (!heatMap) {
+      //     return;
+      //   } else if (heatMapMode === "linear" && valueMode === "numeric") {
+      //     return d3.scale
+      //       .linear()
+      //       .domain(
+      //         d3.extent(dataset, function(d) {
+      //           if (bogusValue !== 1 && selected)
+      //             return +Number(d.data[selected]);
+      //         })
+      //       )
+      //       .range([0, 1]);
+      //   } else if (heatMapMode === "log" && valueMode === "numeric") {
+      //     return d3.scale
+      //       .log()
+      //       .domain(
+      //         d3.extent(dataset, function(d) {
+      //           if (bogusValue !== 1 && selected && selected > 0)
+      //             return +Number(d.data[selected]);
+      //         })
+      //       )
+      //       .range([0, 1]);
+      //   }
+      // }
     };
   };
 

@@ -10,6 +10,8 @@ import dummy from "./dummy.json";
 const App = () => {
   const [data, setData] = useState(dummy.map(item => {
     item.selected = false;
+    // This should be done once data is fetched
+    // All this "transformation" should be done in the reducer
     return item;
   }));
 
