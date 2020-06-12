@@ -25,11 +25,13 @@ export default props => {
       }
     });
 
-  const setEventListeners = () => {};
+  const setEventListeners = (container) => {
+    // add event listeners here
+  };
 
-  const createSVG = () => {
+  const createSVG = (container) => {
     return d3
-      .select(d3Container.current)
+      .select(container)
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr("viewBox", `0 0 450 450`)
       .append("g")
@@ -95,7 +97,7 @@ export default props => {
       return;
     }
 
-    const svg = createSVG();
+    const svg = createSVG(d3Container.current);
     const xAxis = createXAxis(svg);
     const yAxis = createYAxis(svg);
 
