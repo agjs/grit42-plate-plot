@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 export const heatmapColors = [
   "#df5442",
   "#df5d42",
@@ -146,4 +148,42 @@ export const namedColors = {
   Sub097: { bg: "#336799", tx: "black" },
   Sub098: { bg: "#336799", tx: "black" },
   Sub099: { bg: "#336799", tx: "black" }
+};
+
+export const getHeatmapColors = (
+  heatMapMode,
+  valueMode,
+  bogusValue,
+  datasat,
+  selected
+) => {
+  if (!heatMap) {
+    return;
+  }
+
+  if (valueMode === "numeric") {
+    if (heatMapMode === "linear") {
+      return d3.scale
+        .linear()
+        .domain(
+          d3.extent(dataset, d => {
+            if (bogusValue !== 1 && selected) {
+              return +Number(d.data[selected]);
+            }
+          })
+        )
+        .range([0, 1]);
+    } else if (heatMapMode === "log") {
+      return d3.scale
+        .log()
+        .domain(
+          d3.extent(dataset, d => {
+            if (bogusValue !== 1 && selected && selected > 0) {
+              return +Number(d.data[selected]);
+            }
+          })
+        )
+        .range([0, 1]);
+    }
+  }
 };
