@@ -5,22 +5,16 @@ import "./style.css";
 
 import PlatePlot from "./components/plots/Plate";
 
-import dummy from "./dummy.json";
+import dummy from "./test.json";
 
 const App = () => {
-  const [data, setData] = useState(dummy.map(item => {
-    item.selected = false;
-    // This should be done once data is fetched
-    // All this "transformation" should be done in the reducer
-    return item;
-  }));
+  const [data, setData] = useState(dummy);
 
   const onSelected = selected => {
     if (!selected.length) {
       return;
     }
-    console.log(selected)
- 
+    console.log(selected);
   };
   return (
     <div>

@@ -1,27 +1,44 @@
 import * as d3 from "d3";
 import DragSelect from "dragselect";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 import { heatmapColors } from "./utils";
 
 import "./style.css";
 
+import { DATA_SET_SERIES } from "../../../dummy";
+
 export default props => {
   const d3Container = useRef(null);
+
+  const [state, setState] = useState({
+    series: DATA_SET_SERIES,
+    heatMap: false,
+    showTextInCell: true,
+    heatMapMode: "linear",
+    highLightParam: "welllayout__name",
+    selectedParam: "normalized_read",
+    selectedItems: [],
+    params: {
+      mm_plateParam: "plate",
+      mm_wellParam: "well",
+      mm_layoutParam: "welllayout",
+      mm_concentrationParam: "concentration",
+      mm_bogusParam: "bogus"
+    }
+  });
+
+  const { data, yLabels, xLabels, onClick, onSelect } = props;
 
   const margin = { top: 30, right: 30, bottom: 30, left: 30 };
   const width = 450 - margin.left - margin.right;
   const height = 450 - margin.top - margin.bottom;
 
-  const { data, yLabels, xLabels, onClick, onSelect } = props;
-
-  const setEventListeners = container => {
-    // register any event listeners here
-  };
+  const setEventListeners = container => {};
 
   const setSelectables = selectable =>
     new DragSelect({
-      selectables: document.querySelectorAll(".grit42-plate-plot rect"),
+      selectables: document.querySelectorAll(".grit42-plate-plot__svg rect"),
       callback: data => {
         props.onSelect(
           data.map(rect => ({
@@ -74,31 +91,6 @@ export default props => {
         .scaleLinear()
         .range(["white", "#69b3a2"])
         .domain([1, 100])
-      // heatmapColors: (heatMapMode, valueMode, bogusValue, selected) => {
-      //   if (!heatMap) {
-      //     return;
-      //   } else if (heatMapMode === "linear" && valueMode === "numeric") {
-      //     return d3.scale
-      //       .linear()
-      //       .domain(
-      //         d3.extent(dataset, function(d) {
-      //           if (bogusValue !== 1 && selected)
-      //             return +Number(d.data[selected]);
-      //         })
-      //       )
-      //       .range([0, 1]);
-      //   } else if (heatMapMode === "log" && valueMode === "numeric") {
-      //     return d3.scale
-      //       .log()
-      //       .domain(
-      //         d3.extent(dataset, function(d) {
-      //           if (bogusValue !== 1 && selected && selected > 0)
-      //             return +Number(d.data[selected]);
-      //         })
-      //       )
-      //       .range([0, 1]);
-      //   }
-      // }
     };
   };
 
@@ -120,6 +112,27 @@ export default props => {
     return rectangles;
   };
 
+  const getRectangleDimensions = () => {
+    const { xDim: width, yDim: height } = state;
+    const { length } = state.series;
+
+    if (!width || !height) {
+      switch (length) {
+        case 96:
+          return { width: 12, height: 8 };
+        case 384:
+          return { width: 24, height: 16 };
+        case 1536:
+          return { width: 48, height: 32 };
+      }
+    } else {
+      return {
+        xDim: width,
+        yDim: height
+      };
+    }
+  };
+
   useEffect(() => {
     if (!props.data || !d3Container.current) {
       return;
@@ -134,5 +147,27 @@ export default props => {
     setSelectables();
   }, [props.data, d3Container.current]);
 
-  return <svg className="grit42-plate-plot" ref={d3Container} />;
+  return (
+    <div className="grit42-plate-plot">
+      <form>
+        <select>
+          <option>% Effect</option>
+          <option>Compound</option>
+          <option>Concentration</option>
+          <option>Concentration Normalized</option>
+          <option>Signal</option>
+          <option>Singal without background % (delta F)</option>
+          <option>Unit</option>
+          <option>Well Layout</option>
+        </select>
+        <label htmlFor="show_heatmap">Show Heatmap</label>
+        <input type="checkbox" name="show_heatmap" value="show_heatmap" />
+        <select>
+          <option>Linear</option>
+          <option>Logarithmic</option>
+        </select>
+      </form>
+      <svg className="grit42-plate-plot__svg" ref={d3Container} />
+    </div>
+  );
 };
