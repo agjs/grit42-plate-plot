@@ -164,7 +164,10 @@ export default props => {
       rectangles.style(styleName, styles[styleName])
     );
 
-    rectangles.text(d => d[state.params.well]);
+    rectangles.append("text").text(d => d[state.params.well]);
+    // TODO
+    // text cannot go directly inside the rect
+    // instead, it needs to be grouped inside of g element
 
     return rectangles;
   };
