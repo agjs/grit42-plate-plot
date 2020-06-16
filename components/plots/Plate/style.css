@@ -1,4 +1,10 @@
+
 .grit42-plate-plot .ds-selected {
   fill: red !important;
+}
+
+.grit42-plate-plot .tick {
+  color: #a4a4a6;
+  font-weight: bold;
 }
 

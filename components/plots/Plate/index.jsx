@@ -3,13 +3,12 @@ import DragSelect from "dragselect";
 import React, { useRef, useEffect, useState } from "react";
 
 import {
-  heatmapColors,
-  namedColors,
   createLabels,
   addZeroPad,
   yToWell,
   wellToX,
-  wellToY
+  wellToY,
+  COLORS
 } from "./utils";
 
 import "./style.css";
@@ -79,7 +78,11 @@ export default props => {
       .domain(getXLabels())
       .padding(0.01);
 
-    svg.append("g").call(d3.axisTop(xAxis));
+    svg
+      .append("g")
+      .call(d3.axisTop(xAxis))
+      .call(g => g.select(".domain").remove())
+      .call(g => g.selectAll("line").remove());
 
     return xAxis;
   };
@@ -91,7 +94,11 @@ export default props => {
       .domain(getYLabels())
       .padding(0.01);
 
-    svg.append("g").call(d3.axisLeft(yAxis));
+    svg
+      .append("g")
+      .call(d3.axisLeft(yAxis))
+      .call(g => g.select(".domain").remove())
+      .call(g => g.selectAll("line").remove());
 
     return yAxis;
   };
@@ -112,33 +119,24 @@ export default props => {
     );
   };
 
-  const getStyles = () => {
-    return {
-      fill: d3
-        .scaleLinear()
-        .range(["white", "#69b3a2"])
-        .domain([1, 100])
-    };
-  };
-
   const heatmapColour = d3 // TODO
     .scaleLinear()
-    .domain(d3.range(0, 1, 1.0 / (heatmapColors.length - 1)))
-    .range(heatmapColors);
+    .domain(d3.range(0, 1, 1.0 / (COLORS.heat.length - 1)))
+    .range(COLORS.heat);
 
   const getRectangleColors = d => {
     const { bogusParam, layoutParam } = state.params;
     if (d[bogusParam] == 1) {
-      return "#04040c";
+      return COLORS.bogus;
     } else {
       if (state.heatMap && state.valueMode === "numeric") {
         // TODO
         return heatmapColour(heatColors(d[selectedParam]));
       } else {
-        if (namedColors[d[`${layoutParam}__name`]]) {
-          return namedColors[d[`${layoutParam}__name`]]["bg"];
+        if (COLORS.named[d[`${layoutParam}__name`]]) {
+          return COLORS.named[d[`${layoutParam}__name`]]["bg"];
         } else {
-          return namedColors["blank"]["bg"];
+          return COLORS.named["blank"]["bg"];
         }
       }
     }
@@ -156,8 +154,7 @@ export default props => {
       rx: 4,
       ry: 4,
       width: xAxis.bandwidth(),
-      height: yAxis.bandwidth(),
-      fill: d => getStyles().fill(d.value)
+      height: yAxis.bandwidth()
     };
 
     const styles = {

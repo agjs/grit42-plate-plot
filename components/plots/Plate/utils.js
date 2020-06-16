@@ -150,6 +150,12 @@ export const namedColors = {
   Sub099: { bg: "#336799", tx: "black" }
 };
 
+export const COLORS = {
+  named: namedColors,
+  heat: heatmapColors,
+  bogus: '#04040c'
+}
+
 export const getHeatmapColors = (
   heatMapMode,
   valueMode,
