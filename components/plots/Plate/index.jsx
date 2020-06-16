@@ -79,10 +79,7 @@ export default props => {
       .domain(getXLabels())
       .padding(0.01);
 
-    svg
-      .append("g")
-      .attr("transform", `translate(0, ${height})`)
-      .call(d3.axisBottom(xAxis));
+    svg.append("g").call(d3.axisTop(xAxis));
 
     return xAxis;
   };
@@ -90,7 +87,7 @@ export default props => {
   const createYAxis = svg => {
     const yAxis = d3
       .scaleBand()
-      .range([height, 0])
+      .range([0, height])
       .domain(getYLabels())
       .padding(0.01);
 
