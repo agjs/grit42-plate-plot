@@ -25,19 +25,16 @@ export default props => {
     scientific: false,
     subBlank: false,
     heatMapMode: "linear",
-    highLightParam: "welllayout__name",
-    selectedParam: "normalized_read",
     valueMode: "ordinal",
     selectedItems: [],
     params: {
-      // those most probably should be passed as props
-      // as they most likely determine which features should be enabled
-      // in a plate plot
-      plateParam: "plate",
-      wellParam: "well",
-      layoutParam: "welllayout",
-      concentrationParam: "concentration",
-      bogusParam: "bogus"
+      plate: "plate",
+      well: "well",
+      layout: "welllayout",
+      concentration: "concentration",
+      bogus: "bogus",
+      selected: "normalized_read",
+      highLight: "welllayout__name"
     }
   });
 
@@ -125,16 +122,16 @@ export default props => {
     .range(COLORS.heat);
 
   const getRectangleColors = d => {
-    const { bogusParam, layoutParam } = state.params;
-    if (d[bogusParam] == 1) {
+    const { bogus, layout, selected } = state.params;
+    if (d[bogus] == 1) {
       return COLORS.bogus;
     } else {
       if (state.heatMap && state.valueMode === "numeric") {
         // TODO
-        return heatmapColour(heatColors(d[selectedParam]));
+        return heatmapColour(heatColors(d[selected]));
       } else {
-        if (COLORS.named[d[`${layoutParam}__name`]]) {
-          return COLORS.named[d[`${layoutParam}__name`]]["bg"];
+        if (COLORS.named[d[`${layout}__name`]]) {
+          return COLORS.named[d[`${layout}__name`]]["bg"];
         } else {
           return COLORS.named["blank"]["bg"];
         }
@@ -175,7 +172,7 @@ export default props => {
       rectangles.style(styleName, styles[styleName])
     );
 
-    rectangles.text(d => d[state.params["wellParam"]]);
+    rectangles.text(d => d[state.params.well]);
 
     return rectangles;
   };

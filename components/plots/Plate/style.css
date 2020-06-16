@@ -1,6 +1,6 @@
 
 .grit42-plate-plot .ds-selected {
-  fill: red !important;
+  opacity: 0.7;
 }
 
 .grit42-plate-plot .tick {
