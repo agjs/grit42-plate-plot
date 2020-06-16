@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 
 import {
   heatmapColors,
+  namedColors,
   createLabels,
   addZeroPad,
   yToWell,
@@ -22,9 +23,12 @@ export default props => {
     series: DATA_SET_SERIES,
     heatMap: false,
     showTextInCell: true,
+    scientific: false,
+    subBlank: false,
     heatMapMode: "linear",
     highLightParam: "welllayout__name",
     selectedParam: "normalized_read",
+    valueMode: "ordinal",
     selectedItems: [],
     params: {
       // those most probably should be passed as props
@@ -120,6 +124,29 @@ export default props => {
     };
   };
 
+  const heatmapColour = d3 // TODO
+    .scaleLinear()
+    .domain(d3.range(0, 1, 1.0 / (heatmapColors.length - 1)))
+    .range(heatmapColors);
+
+  const getRectangleColors = d => {
+    const { bogusParam, layoutParam } = state.params;
+    if (d[bogusParam] == 1) {
+      return "#04040c";
+    } else {
+      if (state.heatMap && state.valueMode === "numeric") {
+        // TODO
+        return heatmapColour(heatColors(d[selectedParam]));
+      } else {
+        if (namedColors[d[`${layoutParam}__name`]]) {
+          return namedColors[d[`${layoutParam}__name`]]["bg"];
+        } else {
+          return namedColors["blank"]["bg"];
+        }
+      }
+    }
+  };
+
   const createRectangles = (svg, xAxis, yAxis) => {
     const attributes = {
       index: (d, i) => i,
@@ -137,9 +164,7 @@ export default props => {
     };
 
     const styles = {
-      fill: d => {
-        return getStyles().fill(d.welllayout__name);
-      }
+      fill: d => getRectangleColors(d)
     };
 
     const rectangles = svg
@@ -156,23 +181,26 @@ export default props => {
       rectangles.style(styleName, styles[styleName])
     );
 
-    rectangles.text(function(d) {
-      return d[state.params["wellParam"]];
-    });
+    rectangles.text(d => d[state.params["wellParam"]]);
 
     return rectangles;
   };
 
   const getRectangleDimensions = () => {
-    switch (state.series.length) {
-      case 96:
-        return { width: 12, height: 8 };
-      case 384:
-        return { width: 24, height: 16 };
-      case 1536:
-        return { width: 48, height: 32 };
-      default:
-        return { width: 12, height: 8 };
+    const { rectWidth, rectHeight } = props;
+    if (!rectWidth || !rectHeight) {
+      switch (state.series.length) {
+        case 96:
+          return { width: 12, height: 8 };
+        case 384:
+          return { width: 24, height: 16 };
+        case 1536:
+          return { width: 48, height: 32 };
+        default:
+          return { width: 12, height: 8 };
+      }
+    } else {
+      return { width: rectWidth, height: rectHeight };
     }
   };
 
