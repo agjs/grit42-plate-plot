@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import DragSelect from "dragselect";
 import React, { useRef, useEffect, useState } from "react";
 
-import { heatmapColors } from "./utils";
+import { heatmapColors, createLabels, addZeroPad, yToWell } from "./utils";
 
 import "./style.css";
 
@@ -20,11 +20,14 @@ export default props => {
     selectedParam: "normalized_read",
     selectedItems: [],
     params: {
-      mm_plateParam: "plate",
-      mm_wellParam: "well",
-      mm_layoutParam: "welllayout",
-      mm_concentrationParam: "concentration",
-      mm_bogusParam: "bogus"
+      // those most probably should be passed as props
+      // as they most likely determine which features should be enabled
+      // in a plate plot
+      plateParam: "plate",
+      wellParam: "well",
+      layoutParam: "welllayout",
+      concentrationParam: "concentration",
+      bogusParam: "bogus"
     }
   });
 
@@ -62,7 +65,7 @@ export default props => {
     const xAxis = d3
       .scaleBand()
       .range([0, width])
-      .domain(xLabels)
+      .domain(getXLabels())
       .padding(0.01);
 
     svg
@@ -77,12 +80,28 @@ export default props => {
     const yAxis = d3
       .scaleBand()
       .range([height, 0])
-      .domain(yLabels)
+      .domain(getYLabels())
       .padding(0.01);
 
     svg.append("g").call(d3.axisLeft(yAxis));
 
     return yAxis;
+  };
+
+  const getXLabels = () => {
+    return createLabels(
+      props.xLabels,
+      getRectangleDimensions().width,
+      addZeroPad
+    );
+  };
+
+  const getYLabels = () => {
+    return createLabels(
+      props.yLabels,
+      getRectangleDimensions().height,
+      yToWell
+    );
   };
 
   const getStyles = () => {
@@ -113,23 +132,15 @@ export default props => {
   };
 
   const getRectangleDimensions = () => {
-    const { xDim: width, yDim: height } = state;
-    const { length } = state.series;
-
-    if (!width || !height) {
-      switch (length) {
-        case 96:
-          return { width: 12, height: 8 };
-        case 384:
-          return { width: 24, height: 16 };
-        case 1536:
-          return { width: 48, height: 32 };
-      }
-    } else {
-      return {
-        xDim: width,
-        yDim: height
-      };
+    switch (state.series.length) {
+      case 96:
+        return { width: 12, height: 8 };
+      case 384:
+        return { width: 24, height: 16 };
+      case 1536:
+        return { width: 48, height: 32 };
+      default:
+        return { width: 12, height: 8 };
     }
   };
 
