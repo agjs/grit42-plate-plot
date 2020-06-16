@@ -154,7 +154,7 @@ export const getHeatmapColors = (
   heatMapMode,
   valueMode,
   bogusValue,
-  datasat,
+  series,
   selected
 ) => {
   if (!heatMap) {
@@ -166,7 +166,7 @@ export const getHeatmapColors = (
       return d3.scale
         .linear()
         .domain(
-          d3.extent(dataset, d => {
+          d3.extent(series, d => {
             if (bogusValue !== 1 && selected) {
               return +Number(d.data[selected]);
             }
@@ -177,7 +177,7 @@ export const getHeatmapColors = (
       return d3.scale
         .log()
         .domain(
-          d3.extent(dataset, d => {
+          d3.extent(series, d => {
             if (bogusValue !== 1 && selected && selected > 0) {
               return +Number(d.data[selected]);
             }
@@ -190,7 +190,7 @@ export const getHeatmapColors = (
 
 /**
  * Adds the zero padding to numbers up to 10.
- * @example 01, 02, 03, 04, ... 10, 11
+ * @example 01, 02, 03, 04, ... 09
  */
 export const addZeroPad = number => `0${number}`.slice(-2);
 

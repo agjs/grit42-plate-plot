@@ -114,19 +114,29 @@ export default props => {
   };
 
   const createRectangles = (svg, xAxis, yAxis) => {
+    const attributes = {
+      index: (d, i) => i,
+      x: d => xAxis(d.group),
+      y: d => yAxis(d.variable),
+      rx: 4,
+      ry: 4,
+      width: xAxis.bandwidth(),
+      height: yAxis.bandwidth(),
+      fill: d => getStyles().fill(d.value)
+    };
+
+    const styles = {
+      fill: d => getStyles().fill(d.value)
+    };
+
     const rectangles = svg
       .selectAll()
       .data(data, d => `${d.group}:${d.variable}`)
       .enter()
       .append("rect");
 
-    rectangles
-      .attr("index", (d, i) => i)
-      .attr("x", d => xAxis(d.group))
-      .attr("y", d => yAxis(d.variable))
-      .attr("width", xAxis.bandwidth())
-      .attr("height", yAxis.bandwidth())
-      .style("fill", d => getStyles().fill(d.value));
+    Object.keys(attributes).forEach(attributeName => rectangles.attr(attributeName, attributes[attributeName]))
+    Object.keys(styles).forEach(styleName => rectangles.style(styleName, styles[styleName]))
 
     return rectangles;
   };
