@@ -42,7 +42,7 @@ export default props => {
 
   const margin = { top: 30, right: 30, bottom: 30, left: 30 };
   const width = 450 - margin.left - margin.right;
-  const height = 450 - margin.top - margin.bottom;
+  const height = 150 - margin.top - margin.bottom;
 
   const setEventListeners = container => {};
 
@@ -140,8 +140,8 @@ export default props => {
       y: d => {
         return yAxis(d.well.charAt(0)); // TODO
       },
-      rx: 4,
-      ry: 4,
+      rx: 2,
+      ry: 2,
       width: xAxis.bandwidth(),
       height: yAxis.bandwidth()
     };
