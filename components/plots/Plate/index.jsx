@@ -101,19 +101,11 @@ export default props => {
   };
 
   const getXLabels = () => {
-    return createLabels(
-      props.xLabels,
-      getRectangleDimensions().width,
-      addZeroPad
-    );
+    return createLabels(props.xLabels, getGridDimensions().xAxis, addZeroPad);
   };
 
   const getYLabels = () => {
-    return createLabels(
-      props.yLabels,
-      getRectangleDimensions().height,
-      yToWell
-    );
+    return createLabels(props.yLabels, getGridDimensions().yAxis, yToWell);
   };
 
   const heatmapColour = d3 // TODO
@@ -177,21 +169,21 @@ export default props => {
     return rectangles;
   };
 
-  const getRectangleDimensions = () => {
-    const { rectWidth, rectHeight } = props;
-    if (!rectWidth || !rectHeight) {
+  const getGridDimensions = () => {
+    const { xAxis, yAxis } = props.gridDimensions || {};
+    if (!xAxis || !yAxis) {
       switch (state.series.length) {
         case 96:
-          return { width: 12, height: 8 };
+          return { xAxis: 12, yAxis: 8 };
         case 384:
-          return { width: 24, height: 16 };
+          return { xAxis: 24, yAxis: 16 };
         case 1536:
-          return { width: 48, height: 32 };
+          return { xAxis: 48, yAxis: 32 };
         default:
-          return { width: 12, height: 8 };
+          return { xAxis: 12, yAxis: 8 };
       }
     } else {
-      return { width: rectWidth, height: rectHeight };
+      return { xAxis, yAxis };
     }
   };
 
