@@ -2,7 +2,14 @@ import * as d3 from "d3";
 import DragSelect from "dragselect";
 import React, { useRef, useEffect, useState } from "react";
 
-import { heatmapColors, createLabels, addZeroPad, yToWell } from "./utils";
+import {
+  heatmapColors,
+  createLabels,
+  addZeroPad,
+  yToWell,
+  wellToX,
+  wellToY
+} from "./utils";
 
 import "./style.css";
 
@@ -31,7 +38,7 @@ export default props => {
     }
   });
 
-  const { data, yLabels, xLabels, onClick, onSelect } = props;
+  const { plotData, yLabels, xLabels, onClick, onSelect } = props;
 
   const margin = { top: 30, right: 30, bottom: 30, left: 30 };
   const width = 450 - margin.left - margin.right;
@@ -116,8 +123,12 @@ export default props => {
   const createRectangles = (svg, xAxis, yAxis) => {
     const attributes = {
       index: (d, i) => i,
-      x: d => xAxis(d.group),
-      y: d => yAxis(d.variable),
+      x: d => {
+        return xAxis(d.well.substr(1)); // TODO
+      },
+      y: d => {
+        return yAxis(d.well.charAt(0)); // TODO
+      },
       rx: 4,
       ry: 4,
       width: xAxis.bandwidth(),
@@ -126,17 +137,28 @@ export default props => {
     };
 
     const styles = {
-      fill: d => getStyles().fill(d.value)
+      fill: d => {
+        return getStyles().fill(d.welllayout__name);
+      }
     };
 
     const rectangles = svg
       .selectAll()
-      .data(data, d => `${d.group}:${d.variable}`)
+      .data(state.series)
       .enter()
       .append("rect");
 
-    Object.keys(attributes).forEach(attributeName => rectangles.attr(attributeName, attributes[attributeName]))
-    Object.keys(styles).forEach(styleName => rectangles.style(styleName, styles[styleName]))
+    Object.keys(attributes).forEach(attributeName =>
+      rectangles.attr(attributeName, attributes[attributeName])
+    );
+
+    Object.keys(styles).forEach(styleName =>
+      rectangles.style(styleName, styles[styleName])
+    );
+
+    rectangles.text(function(d) {
+      return d[state.params["wellParam"]];
+    });
 
     return rectangles;
   };
@@ -155,7 +177,7 @@ export default props => {
   };
 
   useEffect(() => {
-    if (!props.data || !d3Container.current) {
+    if (!props.plotData || !d3Container.current) {
       return;
     }
 
