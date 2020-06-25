@@ -35,9 +35,6 @@ const App = () => {
     }
   };
   const onSelected = (items) => {
-    if (!items.length) {
-      return;
-    }
     setSelected(items);
   };
 
